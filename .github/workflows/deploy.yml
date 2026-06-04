@@ -1,0 +1,69 @@
+name: Deploy to Azure Container Apps
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: ACR Login
+        run: az acr login --name ${{ vars.ACR }}
+
+      - name: Build & push backend image
+        run: |
+          docker build \
+            -t ${{ vars.ACR }}.azurecr.io/rgks2-backend:${{ github.sha }} \
+            ./backend
+          docker push ${{ vars.ACR }}.azurecr.io/rgks2-backend:${{ github.sha }}
+
+      - name: Build & push frontend image
+        run: |
+          docker build \
+            --build-arg VITE_CLIENT_ID=${{ vars.VITE_CLIENT_ID }} \
+            --build-arg VITE_TENANT_ID=${{ vars.VITE_TENANT_ID }} \
+            -t ${{ vars.ACR }}.azurecr.io/rgks2-frontend:${{ github.sha }} \
+            ./frontend
+          docker push ${{ vars.ACR }}.azurecr.io/rgks2-frontend:${{ github.sha }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy multi-container app
+        run: |
+          az containerapp update \
+            --name ${{ vars.ACA_APP }} \
+            --resource-group ${{ vars.RG }} \
+            --set-env-vars \
+              BACKEND_HOST=localhost \
+            --container-name frontend \
+            --image ${{ vars.ACR }}.azurecr.io/rgks2-frontend:${{ github.sha }}
+
+          az containerapp update \
+            --name ${{ vars.ACA_APP }} \
+            --resource-group ${{ vars.RG }} \
+            --container-name backend \
+            --image ${{ vars.ACR }}.azurecr.io/rgks2-backend:${{ github.sha }}
+
+      - name: Run migrations
+        run: |
+          script -qec "az containerapp exec \
+            --name ${{ vars.ACA_APP }} \
+            --resource-group ${{ vars.RG }} \
+            --container backend \
+            --command 'python manage.py migrate --noinput'" /dev/null

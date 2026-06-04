@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AZURE_AD_TENANT_ID = os.environ.get("VITE_TENANT_ID", "")
+AZURE_AD_CLIENT_ID = os.environ.get("VITE_CLIENT_ID", "")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -23,9 +26,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-f$e55lhv6+fq_$0n4-s@bcf%q@ki(9tx5o^o3d+i#wg*57bd1#"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get("ALLOWED_HOSTS").split(",")
+    if host.strip()
+] if os.environ.get("ALLOWED_HOSTS") else ["localhost"]
+
+CORS_ALLOWED_ORIGINS = [
+    f"https://{host.strip()}" 
+    for host in os.environ.get("ALLOWED_HOSTS").split(",")
+] if os.environ.get("ALLOWED_HOSTS") else ["http://localhost:5173"]
 
 
 # Application definition
@@ -76,12 +88,26 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if os.environ.get("DB_ENGINE"):
+    DATABASES = {
+        "default": {
+            "ENGINE": os.environ["DB_ENGINE"],
+            "NAME": os.environ.get("DB_NAME", ""),
+            "USER": os.environ.get("DB_USER", ""),
+            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+            "HOST": os.environ.get("DB_HOST", ""),
+            "PORT": os.environ.get("DB_PORT", ""),
+        },
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        },
+    }
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Password validation
@@ -121,6 +147,12 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "api.authentication.AzureADAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,

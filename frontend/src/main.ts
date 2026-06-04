@@ -1,23 +1,14 @@
-/**
- * main.ts
- *
- * Bootstraps Vuetify and other plugins then mounts the App`
- */
-
-// Composables
+// src/main.ts
 import { createApp } from 'vue'
-
-// Plugins
+import App from './App.vue'
+import { initAuth } from './auth/useAuth'
 import { registerPlugins } from '@/plugins'
 
-// Components
-import App from './App.vue'
+async function bootstrap() {
+  await initAuth()
+  const app = createApp(App)
+  registerPlugins(app)
+  app.mount('#app')
+}
 
-// Styles
-import 'unfonts.css'
-
-const app = createApp(App)
-
-registerPlugins(app)
-
-app.mount('#app')
+bootstrap()
