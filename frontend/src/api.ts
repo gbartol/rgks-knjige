@@ -1,3 +1,9 @@
+import { useAuth } from './auth/useAuth'
+import type { Profile } from './types'
+
+const { getApiToken } = useAuth()
+
+
 export class ValidationError extends Error {
   constructor(public fields: Record<string, string[]>) {
     super('Validation error')
@@ -23,4 +29,14 @@ export function formatError(err: unknown) {
         .join('\n')
   }
   return err instanceof Error ? err.message : String(err)
+}
+
+//------ API pozivi -------
+export async function fetchMyProfile() {
+  const token = await getApiToken()
+  const resp = await fetch('/api/profile/me/', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+  return await resp.json() as Profile
 }
