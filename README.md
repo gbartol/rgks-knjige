@@ -194,34 +194,33 @@ UserSearchView --> UserCard
 type UserSummary = {
   id: number;
   username: string;
-  displayName: string;
-  avatarUrl: string | null;
-  isFollowing?: boolean; // popunjeno kad gledamo drugog korisnika
+  display_name: string;
+  avatar_url: string | null;
+  is_following?: boolean; // popunjeno kad gledamo drugog korisnika
 };
 ```
 ```ts
 type Profile = {
-  user: UserSummary;
-  displayName: string;
-  avatarUrl: string | null;
+  display_name: string;
+  avatar_url: string | null;
 };
 ```
 ```ts
 type ProfileInput = {
-  displayName: string;
-  avatarUrl?: string | null;
+  display_name: string;
+  avatar_url?: string | null;
 };
 ```
 ```ts
 type Book = {
   id: number;
-  externalId: string;
+  external_id: string;
   isbn: string;
   title: string;
   authors: string;
   description: string;
-  coverUrl: string | null;
-  publishedYear: number | null;
+  cover_url: string | null;
+  published_year: number | null;
 };
 ```
 ```ts
@@ -229,15 +228,15 @@ type BookSummary = {
   id: number;
   title: string;
   authors: string;
-  coverUrl: string | null;
+  cover_url: string | null;
 };
 ```
 ```ts
 type Shelf = {
   id: number;
   name: string;
-  isSystem: boolean;
-  isPublic: boolean;
+  is_system: boolean;
+  is_public: boolean;
 };
 ```
 ```ts
@@ -247,7 +246,7 @@ type Review = {
   book: BookSummary; // za prikaz u feedu
   rating: number;    // 1..5
   text: string;
-  createdAt: string; // ISO datum
+  created_at: string; // ISO datum
 };
 ```
 

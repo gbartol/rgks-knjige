@@ -16,6 +16,7 @@
     "@mdi/font": "7.4.47",
     "@tanstack/vue-query": "^5.101.0",
     "vue": "^3.5.30",
+    "vue-router": "^5.1.0",
     "vuetify": "^4.0.2"
   },
   "devDependencies": {

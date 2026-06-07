@@ -1,7 +1,6 @@
 // src/auth/useAuth.ts
 import {
   EventType,
-  InteractionRequiredAuthError,
   PublicClientApplication,
   type AccountInfo,
   type Configuration,
@@ -44,7 +43,13 @@ export async function initAuth() {
   // Kad Azure završi login proces, preusmjerava preglednik na našu aplikaciju.
   // U tom slučaju MSAL treba pročitati postavljene parametre u URL-u i obraditi ih.
   // Ovo želimo napraviti prije inicijalizacije Vue aplikacije, jer bi Azureovi URL parametri (`http://localhost:5173?code=...#state=...`)  mogli zbuniti našu aplikaciju.
-  await msalInstance.handleRedirectPromise()
+  try {
+    await msalInstance.handleRedirectPromise()
+  } catch (error) {
+    // Npr. Azure odbije zahtjev (krivi scope/resource). Ne želimo da cijela aplikacija
+    // ostane na bijelom ekranu — logiramo grešku i svejedno nastavljamo s mountanjem.
+    console.error('handleRedirectPromise failed:', error)
+  }
   accounts.value = msalInstance.getAllAccounts()
 
   msalInstance.addEventCallback((event) => {
@@ -59,7 +64,9 @@ export async function initAuth() {
 }
 
 function login() {
-  msalInstance!.loginRedirect({ scopes: ['openid', 'profile', 'email'] })
+  // tokenRequest sadrži api://.../access_as_user; MSAL sam dodaje openid/profile/email.
+  // Tako consent za API scope dobijemo već pri prijavi, pa kasniji acquireTokenSilent uspijeva.
+  msalInstance!.loginRedirect(tokenRequest)
 }
 
 function logout() {
@@ -76,10 +83,11 @@ async function getApiToken(): Promise<string> {
     })
     return response.accessToken
   } catch (error) {
-    if (error instanceof InteractionRequiredAuthError) {
-      // Preusmjerava na login; ovim pozivom završava cijela naša skripta jer browser napušta trenutnu stranicu
-      await msalInstance!.acquireTokenRedirect(tokenRequest)
-    }
+    // Silent može pasti zbog isteklog/nepostojećeg refresh tokena ili nedostatka consenta
+    // za API scope (MSAL to ne klasificira uvijek kao InteractionRequiredAuthError), pa na
+    // bilo koji neuspjeh padamo na interaktivni redirect. Ovim pozivom browser napušta
+    // trenutnu stranicu, pa kod nakon njega praktički ne dolazi do izvršavanja.
+    await msalInstance!.acquireTokenRedirect({ ...tokenRequest, account: account.value ?? undefined })
     throw error
   }
 }

@@ -1,13 +1,12 @@
 export type UserSummary = {
   id: number
   username: string
-  displayName: string
-  avatarUrl: string | null
-  isFollowing?: boolean // popunjeno kad gledamo drugog korisnika
+  display_name: string
+  avatar_url: string | null
+  is_following?: boolean // popunjeno kad gledamo drugog korisnika
 }
 
 export type Profile = {
-  user: UserSummary
-  displayName: string
-  avatarUrl: string | null
+  display_name: string
+  avatar_url: string | null
 }

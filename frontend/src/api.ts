@@ -40,3 +40,17 @@ export async function fetchMyProfile() {
   await throwIfError(resp)
   return await resp.json() as Profile
 }
+
+export async function updateMyProfile(changes: Partial<Profile>) {
+  const token = await getApiToken()
+  const resp = await fetch('/api/profile/me/', {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(changes),
+  })
+  await throwIfError(resp)
+  return await resp.json() as Profile
+}

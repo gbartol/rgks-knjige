@@ -3,6 +3,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+set -a
+source .env
+set +a
+
 echo "Starting backend..."
 cd "$SCRIPT_DIR/backend"
 

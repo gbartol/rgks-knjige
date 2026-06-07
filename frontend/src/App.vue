@@ -1,18 +1,23 @@
 <template>
   <v-app>
+    <v-app-bar>
+      <v-app-bar-title>Bookshelf</v-app-bar-title>
+      <v-spacer />
+      <template v-if="isAuthenticated">
+        <v-btn :to="{ name: 'profile' }">Profil</v-btn>
+        <v-btn @click="logout()">Odjava</v-btn>
+      </template>
+      <v-btn v-else @click="login()">Prijava</v-btn>
+    </v-app-bar>
+
     <v-main>
-      <HelloWorld />
+      <router-view />
     </v-main>
-    <v-btn
-      class="ma-2"
-      icon="mdi-theme-light-dark"
-      location="top right"
-      position="absolute"
-      @click="$vuetify.theme.cycle()"
-    />
   </v-app>
 </template>
 
 <script lang="ts" setup>
-  import HelloWorld from '@/components/HelloWorld.vue'
+  import { useAuth } from '@/auth/useAuth'
+
+  const { isAuthenticated, login, logout } = useAuth()
 </script>
