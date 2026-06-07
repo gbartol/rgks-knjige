@@ -4,6 +4,7 @@
       <v-app-bar-title>Bookshelf</v-app-bar-title>
       <v-spacer />
       <template v-if="isAuthenticated">
+        <v-btn :to="{ name: 'users' }">Korisnici</v-btn>
         <v-btn :to="{ name: 'profile' }">Profil</v-btn>
         <v-btn @click="logout()">Odjava</v-btn>
       </template>
