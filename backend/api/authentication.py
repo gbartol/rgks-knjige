@@ -10,6 +10,8 @@ from jwt import PyJWKClient
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
+from api.models import Profile
+
 _jwk_client: PyJWKClient | None = None
 
 
@@ -22,6 +24,19 @@ def _get_jwk_client() -> PyJWKClient:
         )
         _jwk_client = PyJWKClient(jwks_url)
     return _jwk_client
+
+def _display_name_from_payload(payload: dict) -> str:
+    # nalazi najljepše ljudski čitljivo ime
+    name = payload.get("name", "").strip()
+    if name:
+        return name
+    full = f"{payload.get('given_name', '')} {payload.get('family_name', '')}".strip()
+    if full:
+        return full
+    email = payload.get("preferred_username", "")
+    if email:
+        return email.split("@")[0]
+    return payload.get("sub", "")
 
 
 class AzureADAuthentication(BaseAuthentication):
@@ -89,5 +104,13 @@ class AzureADAuthentication(BaseAuthentication):
                 user.first_name = new_first_name
                 user.last_name = new_last_name
                 user.save(update_fields=["email", "first_name", "last_name"])
+
+        Profile.objects.get_or_create(
+            user=user,
+            defaults={
+                'display_name': _display_name_from_payload(payload),
+                'avatar_url': '',
+            },
+        )
 
         return user
