@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Profile
-from .serializers import ProfileSerializer
+from .serializers import ProfileSerializer, UserSummarySerializer
 
 
 @api_view(['GET', 'PATCH'])
@@ -28,3 +30,18 @@ def my_profile(request):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+@api_view(['GET'])
+def user_search(request):
+    search = request.query_params.get('search', '').strip()
+    profiles = (
+        Profile.objects
+        .select_related('user')
+        .filter(display_name__icontains=search)
+        .order_by('display_name')
+    )
+    paginator = PageNumberPagination()
+    page = paginator.paginate_queryset(profiles, request)
+    serializer = UserSummarySerializer(page, many=True)
+    return paginator.get_paginated_response(serializer.data)

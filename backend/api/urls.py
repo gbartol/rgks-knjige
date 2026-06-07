@@ -6,4 +6,5 @@ from . import views
 urlpatterns = [
     # Ovdje dodajemo url-ove kada napravimo neku rutu
     path('profile/me/', views.my_profile, name='my-profile'),
+    path('users/', views.user_search, name='user-search'),
 ]

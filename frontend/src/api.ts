@@ -1,5 +1,5 @@
 import { useAuth } from './auth/useAuth'
-import type { Profile } from './types'
+import type { Profile, UserSummary } from './types'
 
 const { getApiToken } = useAuth()
 
@@ -53,4 +53,14 @@ export async function updateMyProfile(changes: Partial<Profile>) {
   })
   await throwIfError(resp)
   return await resp.json() as Profile
+}
+
+export async function userSearch(search: string) {
+    const token = await getApiToken()
+    const resp = await fetch(`/api/users/?search=${encodeURIComponent(search)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    await throwIfError(resp)
+    const data = await resp.json()
+    return data.results as UserSummary[]
 }

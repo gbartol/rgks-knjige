@@ -3,6 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 
 import { useAuth } from '@/auth/useAuth'
 import ProfileEditView from './ProfileEditView.vue'
+import UserSearchView from './UserSearchView.vue'
 
 
 const routes: RouteRecordRaw[] = [
@@ -10,6 +11,12 @@ const routes: RouteRecordRaw[] = [
     path: '/profile',
     name: 'profile',
     component: ProfileEditView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/users',
+    name: 'users',
+    component: UserSearchView,
     meta: { requiresAuth: true },
   },
 ]
