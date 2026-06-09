@@ -30,7 +30,7 @@ class Book(models.Model):
         return self.title
     
 class Shelf(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, relatives_name="shelves")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="shelves")
     name = models.CharField(max_length=100)
     is_system = models.BooleanField(default=False)
     is_public = models.BooleanField(default=True)
