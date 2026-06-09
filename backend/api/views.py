@@ -117,3 +117,11 @@ def modify_shelf_books(request, shelf_id, action):
         return Response({"detail": f"Knjiga uspješno maknuta s police '{shelf.name}'."})
         
     return Response({"detail": "Nepoznata akcija."}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_review(request, review_id):
+    """ DELETE /api/reviews/<review_id>/ """
+    review = get_object_or_404(Review, id=review_id, user=request.user)
+    review.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
