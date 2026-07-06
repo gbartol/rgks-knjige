@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import Profile, Book, Shelf, Review
+from .models import Profile, Book, Shelf, Review, Follow
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -17,10 +17,20 @@ class UserSummarySerializer(serializers.ModelSerializer):
     # dolaze s povezanog User-a.
     id = serializers.IntegerField(source='user.id', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
+    is_following = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ['id', 'username', 'display_name', 'avatar_url']
+        fields = ['id', 'username', 'display_name', 'avatar_url', 'is_following']
+
+    def get_is_following(self, obj):
+        # Prati li prijavljeni korisnik ovog korisnika. obj je Profile (pretraga)
+        # ili User (kad se serializer koristi ugniježđeno) — pokrivamo oba.
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        target_user = obj.user if hasattr(obj, 'user') else obj
+        return Follow.objects.filter(follower=request.user, following=target_user).exists()
 
 class BookSummarySerializer(serializers.ModelSerializer):
 

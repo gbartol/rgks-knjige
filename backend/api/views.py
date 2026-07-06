@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import ListAPIView
@@ -6,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
-from .models import Profile, Book, Shelf, Review
+from .models import Profile, Book, Shelf, Review, Follow
 from .serializers import ProfileSerializer, UserSummarySerializer, BookSerializer, ShelfSerializer, ReviewSerializer
 from .services import search_open_library, get_or_create_book
 
@@ -44,8 +45,24 @@ def user_search(request):
     )
     paginator = PageNumberPagination()
     page = paginator.paginate_queryset(profiles, request)
-    serializer = UserSummarySerializer(page, many=True)
+    serializer = UserSummarySerializer(page, many=True, context={'request': request})
     return paginator.get_paginated_response(serializer.data)
+
+
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def follow_user(request, user_id):
+    target = get_object_or_404(User, id=user_id)
+    if target == request.user:
+        return Response({"detail": "Ne možete pratiti sami sebe."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'POST':
+        Follow.objects.get_or_create(follower=request.user, following=target)
+        return Response(status=status.HTTP_201_CREATED)
+
+    # DELETE
+    Follow.objects.filter(follower=request.user, following=target).delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 # PRETRAGA
 

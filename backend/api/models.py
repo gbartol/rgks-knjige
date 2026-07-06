@@ -61,3 +61,20 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.user.username} -> {self.book.title} ({self.rating}/5)"
+
+class Follow(models.Model):
+    # user.following - koga ja pratim, user.followers - tko mene prati
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # jedan korisnik može pratiti drugog najviše jednom
+        unique_together = ('follower', 'following')
+
+    def clean(self):
+        if self.follower_id == self.following_id:
+            raise ValidationError("Korisnik ne može pratiti sam sebe.")
+
+    def __str__(self):
+        return f"{self.follower.username} prati {self.following.username}"

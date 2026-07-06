@@ -7,6 +7,7 @@ urlpatterns = [
     # Ovdje dodajemo url-ove kada napravimo neku rutu
     path('profile/me/', views.my_profile, name='my-profile'),
     path('users/', views.user_search, name='user-search'),
+    path('users/<int:user_id>/follow/', views.follow_user, name='follow-user'),
     path('books/search/', views.book_search, name='book-search'),
     path('books/<str:external_id>/', views.book_detail, name='book-detail'),
     path('books/<str:external_id>/reviews/', views.add_review, name='add-review'),
