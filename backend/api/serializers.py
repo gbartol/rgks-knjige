@@ -45,8 +45,9 @@ class BookSerializer(serializers.ModelSerializer):
         fields = ['id', 'external_id', 'isbn', 'title', 'authors', 'description', 'cover_url', 'published_year']
 
 class ReviewSerializer(serializers.ModelSerializer):
-    
-    user = UserSummarySerializer(read_only=True)
+
+    # Review.user je User; UserSummarySerializer očekuje Profile, pa prosljeđujemo user.profile.
+    user = UserSummarySerializer(source='user.profile', read_only=True)
     book = BookSummarySerializer(read_only=True)
 
     class Meta:

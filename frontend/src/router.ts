@@ -5,9 +5,16 @@ import { useAuth } from '@/auth/useAuth'
 import ProfileEditView from './ProfileEditView.vue'
 import UserSearchView from './UserSearchView.vue'
 import BookSearchView from './BookSearchView.vue'
+import HomeFeedView from './HomeFeedView.vue'
 
 
 const routes: RouteRecordRaw[] = [
+  {
+    path: '/',
+    name: 'feed',
+    component: HomeFeedView,
+    meta: { requiresAuth: true },
+  },
   {
     path: '/profile',
     name: 'profile',

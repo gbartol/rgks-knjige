@@ -64,6 +64,23 @@ def follow_user(request, user_id):
     Follow.objects.filter(follower=request.user, following=target).delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def feed(request):
+    """ GET /api/feed/ -> recenzije korisnika koje pratim, najnovije prvo. """
+    following_ids = Follow.objects.filter(follower=request.user).values_list('following_id', flat=True)
+    reviews = (
+        Review.objects
+        .filter(user__in=following_ids)
+        .select_related('user', 'book')
+        .order_by('-created_at')
+    )
+    paginator = PageNumberPagination()
+    page = paginator.paginate_queryset(reviews, request)
+    serializer = ReviewSerializer(page, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
+
 # PRETRAGA
 
 @api_view(['GET'])

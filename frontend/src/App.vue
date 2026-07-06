@@ -5,6 +5,7 @@
       <v-spacer />
       
       <template v-if="isAuthenticated">
+        <v-btn :to="{ name: 'feed' }">Feed</v-btn>
         <v-btn :to="{ name: 'book-search' }">Pretraga knjiga</v-btn>
 
         <v-btn :to="{ name: 'users' }">Korisnici</v-btn>

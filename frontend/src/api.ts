@@ -66,6 +66,16 @@ export async function userSearch(search: string) {
     return data.results as UserSummary[]
 }
 
+export async function fetchFeed() {
+  const token = await getApiToken()
+  const resp = await fetch('/api/feed/', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+  const data = await resp.json()
+  return data.results as Review[]
+}
+
 export async function followUser(userId: number) {
   const token = await getApiToken()
   const resp = await fetch(`/api/users/${userId}/follow/`, {
