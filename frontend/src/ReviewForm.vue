@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import axios from 'axios'
+import { addReview, formatError } from '@/api'
 
 const props = defineProps<{
   bookExternalId: string
@@ -23,14 +23,15 @@ const submitReview = async () => {
   errorMessage.value = ''
   
   try {
-    const response = await axios.post(`/api/books/${props.bookExternalId}/reviews/`, {
+    const data = await addReview(props.bookExternalId, {
       rating: rating.value,
       text: text.value
     })
-    emit('review-added', response.data)
-    text.value = '' // Reset teksta
+    
+    emit('review-added', data)
+    text.value = ''
   } catch (error: any) {
-    errorMessage.value = error.response?.data?.detail || 'Došlo je do greške.'
+    errorMessage.value = formatError(error) || 'Došlo je do greške.'
   } finally {
     loading.value = false
   }
@@ -47,7 +48,7 @@ const submitReview = async () => {
         v-model="rating"
         color="amber"
         density="compact"
-        half-increments="false"
+        :half-increments="false"
       ></v-rating>
     </div>
 
@@ -59,7 +60,7 @@ const submitReview = async () => {
       auto-grow
     ></v-textarea>
 
-    <v-alert v-if="errorMessage" type="error" variant="tonal" class="mb-3 density-compact">
+    <v-alert v-if="errorMessage" type="error" variant="tonal" class="mb-3" density="compact">
       {{ errorMessage }}
     </v-alert>
 

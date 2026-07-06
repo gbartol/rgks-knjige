@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import axios from 'axios'
-import { Review } from '@/types'
+import { deleteReview as apiDeleteReview } from '@/api'
+import type { Review } from '@/types'
 
 const props = defineProps<{
   reviews: Review[]
@@ -24,7 +24,7 @@ const deleteReview = async () => {
   deleting.value = true
   
   try {
-    await axios.delete(`/api/reviews/${reviewToDelete.value}/`)
+    await apiDeleteReview(reviewToDelete.value)
     emit('review-deleted', reviewToDelete.value)
     dialog.value = false
   } catch (error) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { Book } from '@/types'
+import type { Book } from '@/types'
 
 const props = defineProps<{
   book: Book

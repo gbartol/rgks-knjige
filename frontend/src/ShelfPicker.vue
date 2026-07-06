@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { Shelf } from '@/types'
+import { fetchShelves as apiFetchShelves, modifyShelfBooks } from '@/api'
+import type { Shelf } from '@/types'
 
 const props = defineProps<{
   bookExternalId: string
@@ -11,25 +11,21 @@ const shelves = ref<Shelf[]>([])
 const selectedShelfId = ref<number | null>(null)
 const loading = ref(false)
 
-// Dohvati sve police korisnika pri učitavanju
 const fetchShelves = async () => {
   try {
-    const response = await axios.get('/api/shelves/')
-    shelves.value = response.data
+    const data = await apiFetchShelves()
+    shelves.value = data
   } catch (error) {
     console.error('Greška pri dohvaćanju polica', error)
   }
 }
 
-// Premjesti knjigu na odabranu policu
 const handleShelfChange = async (shelfId: number) => {
   if (loading.value) return
   loading.value = true
   
   try {
-    await axios.post(`/api/shelves/${shelfId}/add/`, {
-      external_id: props.bookExternalId
-    })
+    await modifyShelfBooks(shelfId, 'add', props.bookExternalId)
     selectedShelfId.value = shelfId
   } catch (error) {
     console.error('Greška pri spremanju na policu', error)

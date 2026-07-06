@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { searchBooks } from '@/api'
 
 const router = useRouter()
 const searchInput = ref('')
@@ -16,10 +16,8 @@ watch(searchInput, async (newVal) => {
   
   loading.value = true
   try {
-    const response = await axios.get('/api/books/search/', {
-      params: { q: newVal }
-    })
-    items.value = response.data
+    const data = await searchBooks(newVal)
+    items.value = data
   } catch (error) {
     console.error('Pretraga nije uspjela', error)
   } finally {

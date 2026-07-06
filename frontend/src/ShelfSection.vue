@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import axios from 'axios'
-import { Shelf, Book } from '@/types'
+import { modifyShelfBooks } from '@/api'
+import type { Shelf, Book } from '@/types'
 import BookCard from './BookCard.vue'
 
 const props = defineProps<{
@@ -15,9 +15,7 @@ const removingBookId = ref<string | null>(null)
 const removeBook = async (externalId: string) => {
   removingBookId.value = externalId
   try {
-    await axios.post(`/api/shelves/${props.shelf.id}/remove/`, {
-      external_id: externalId
-    })
+    await modifyShelfBooks(props.shelf.id, 'remove', externalId)
     emit('book-removed', { shelfId: props.shelf.id, externalId })
   } catch (error) {
     console.error('Greška pri micanju knjige s police', error)
