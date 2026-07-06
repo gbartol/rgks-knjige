@@ -66,6 +66,34 @@ export async function userSearch(search: string) {
     return data.results as UserSummary[]
 }
 
+export async function fetchFeed() {
+  const token = await getApiToken()
+  const resp = await fetch('/api/feed/', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+  const data = await resp.json()
+  return data.results as Review[]
+}
+
+export async function followUser(userId: number) {
+  const token = await getApiToken()
+  const resp = await fetch(`/api/users/${userId}/follow/`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+}
+
+export async function unfollowUser(userId: number) {
+  const token = await getApiToken()
+  const resp = await fetch(`/api/users/${userId}/follow/`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+}
+
 export async function searchBooks(query: string) {
   const token = await getApiToken()
   const resp = await fetch(`/api/books/search/?q=${encodeURIComponent(query)}`, {
