@@ -1,5 +1,5 @@
 import { useAuth } from './auth/useAuth'
-import type { Profile, UserSummary } from './types'
+import type { Profile, UserSummary, Book, Shelf, Review } from './types' 
 
 const { getApiToken } = useAuth()
 
@@ -32,6 +32,7 @@ export function formatError(err: unknown) {
 }
 
 //------ API pozivi -------
+
 export async function fetchMyProfile() {
   const token = await getApiToken()
   const resp = await fetch('/api/profile/me/', {
@@ -63,4 +64,83 @@ export async function userSearch(search: string) {
     await throwIfError(resp)
     const data = await resp.json()
     return data.results as UserSummary[]
+}
+
+export async function searchBooks(query: string) {
+  const token = await getApiToken()
+  const resp = await fetch(`/api/books/search/?q=${encodeURIComponent(query)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+  return await resp.json()
+}
+
+export async function fetchBookDetail(externalId: string) {
+  const token = await getApiToken()
+  const resp = await fetch(`/api/books/${externalId}/`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+  return await resp.json()
+}
+
+export async function addReview(externalId: string, reviewData: { rating: number; text: string }) {
+  const token = await getApiToken()
+  const resp = await fetch(`/api/books/${externalId}/reviews/`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(reviewData),
+  })
+  await throwIfError(resp)
+  return await resp.json()
+}
+
+export async function fetchShelves() {
+  const token = await getApiToken()
+  const resp = await fetch('/api/shelves/', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+  return await resp.json()
+}
+
+export async function createShelf(shelfData: { name: string; is_public?: boolean }) {
+  const token = await getApiToken()
+  const resp = await fetch('/api/shelves/', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(shelfData),
+  })
+  await throwIfError(resp)
+  return await resp.json()
+}
+
+export async function modifyShelfBooks(shelfId: number, action: 'add' | 'remove', externalId: string) {
+  const token = await getApiToken()
+  const resp = await fetch(`/api/shelves/${shelfId}/${action}/`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ external_id: externalId }),
+  })
+  await throwIfError(resp)
+  return await resp.json()
+}
+
+export async function deleteReview(reviewId: number) {
+  const token = await getApiToken()
+  const resp = await fetch(`/api/reviews/${reviewId}/`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+  return true
 }
