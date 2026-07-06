@@ -6,8 +6,7 @@
       
       <template v-if="isAuthenticated">
         <v-btn :to="{ name: 'book-search' }">Pretraga knjiga</v-btn>
-        <v-btn :to="{ name: 'my-shelves' }">Moje police</v-btn>
-        
+
         <v-btn :to="{ name: 'users' }">Korisnici</v-btn>
         <v-btn :to="{ name: 'profile' }">Profil</v-btn>
         <v-btn @click="logout()">Odjava</v-btn>
