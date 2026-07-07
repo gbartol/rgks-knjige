@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { fetchShelves } from '@/api'
 import type { Shelf } from '@/types'
-import ShelfSelection from 'ShelfSelection.vue'
+import ShelfSection from './ShelfSection.vue'
 
 const shelves = ref<Shelf[]>([])
 const loading = ref(true)
@@ -44,10 +44,10 @@ onMounted(loadShelves)
       </v-alert>
       
       <div v-for="shelf in shelves" :key="shelf.id" class="mb-8">
-        <ShelfSelection 
-          :shelf="shelf" 
-          :books="shelf.books || []" 
-          @book-removed="handleBookRemoved"
+        <ShelfSection 
+        :shelf="shelf" 
+        :books="shelf.books || []" 
+        @book-removed="handleBookRemoved"
         />
         <v-divider class="mt-4"></v-divider>
       </div>
