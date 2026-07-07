@@ -8,21 +8,25 @@ const searchInput = ref('')
 const items = ref<any[]>([])
 const loading = ref(false)
 
-watch(searchInput, async (newVal) => {
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
+watch(searchInput, (newVal) => {
   if (!newVal || newVal.length < 3) {
     items.value = []
     return
   }
-  
-  loading.value = true
-  try {
-    const data = await searchBooks(newVal)
-    items.value = data
-  } catch (error) {
-    console.error('Pretraga nije uspjela', error)
-  } finally {
-    loading.value = false
-  }
+  if (debounceTimer) clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(async () => {
+    loading.value = true
+    try {
+      const data = await searchBooks(newVal)
+      items.value = data
+    } catch (error) {
+      console.error('Pretraga nije uspjela', error)
+    } finally {
+      loading.value = false
+    }
+  }, 500)
 })
 
 const onBookSelect = (book: any) => {

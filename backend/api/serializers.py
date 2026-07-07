@@ -56,10 +56,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at']
 
 class ShelfSerializer(serializers.ModelSerializer):
-
     books_count = serializers.IntegerField(source='books.count', read_only=True)
+    books = BookSerializer(many=True, read_only=True)
 
     class Meta:
         model = Shelf
-        fields = ['id', 'name', 'is_system', 'is_public', 'books_count']
+        fields = ['id', 'name', 'is_system', 'is_public', 'books_count', 'books']
         read_only_fields = ['is_system']

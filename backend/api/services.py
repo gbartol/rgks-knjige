@@ -16,7 +16,7 @@ def search_open_library(query: str) -> list:
     }
 
     try:
-        response = requests.get(url, params=params, timeout=5)
+        response = requests.get(url, params=params, timeout=15)
         response.raise_for_status()
         data = response.json()
 
@@ -60,7 +60,7 @@ def get_or_create_book(external_id: str) -> Book:
     # 2) Ako smo došli do ovdje - knjiga nije u bazi, šaljemo query na Open Library
     url = f"{OPEN_LIBRARY_URL}/works/{external_id}.json"
     try:
-        response = requests.get(url, timeout=5)
+        response = requests.get(url, timeout=15)
         response.raise_for_status()
         data = response.json()
 

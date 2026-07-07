@@ -6,6 +6,7 @@ import ProfileEditView from './ProfileEditView.vue'
 import UserSearchView from './UserSearchView.vue'
 import BookSearchView from './BookSearchView.vue'
 import HomeFeedView from './HomeFeedView.vue'
+import MyShelvesView from './MyShelvesView.vue'
 
 
 const routes: RouteRecordRaw[] = [
@@ -31,6 +32,12 @@ const routes: RouteRecordRaw[] = [
     path: '/books',
     name: 'book-search',
     component: BookSearchView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/shelves',
+    name: 'my-shelves',
+    component: MyShelvesView,
     meta: { requiresAuth: true },
   },
 ]
