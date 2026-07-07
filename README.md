@@ -1,5 +1,8 @@
 # RGKS Projekt
 
+## Link
+https://app-rgks-bgracin2.orangecoast-cae63067.polandcentral.azurecontainerapps.io/
+
 ## Upute
 
 ### Instalacija

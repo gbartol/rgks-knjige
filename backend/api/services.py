@@ -64,7 +64,7 @@ def get_or_create_book(external_id: str) -> Book:
         response.raise_for_status()
         data = response.json()
 
-        title = data.get("title", "Nepoznat autor.")
+        title = data.get("title", "Nepoznat naslov.")
 
         description_data = data.get("description","")
         # Opis može biti objekt ili string

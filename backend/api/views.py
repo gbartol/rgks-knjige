@@ -41,6 +41,7 @@ def user_search(request):
         Profile.objects
         .select_related('user')
         .filter(display_name__icontains=search)
+        .exclude(user=request.user)
         .order_by('display_name')
     )
     paginator = PageNumberPagination()
@@ -68,7 +69,6 @@ def follow_user(request, user_id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def feed(request):
-    """ GET /api/feed/ -> recenzije korisnika koje pratim, najnovije prvo. """
     following_ids = Follow.objects.filter(follower=request.user).values_list('following_id', flat=True)
     reviews = (
         Review.objects
