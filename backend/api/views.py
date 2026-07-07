@@ -101,11 +101,19 @@ def book_detail(request, external_id):
     except ValueError as e:
         return Response({"detail": str(e)}, status=status.HTTP_404_NOT_FOUND)
     
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def add_review(request, external_id):
+    if request.method == 'GET':
+        # Recenzije za knjigu; ako knjiga još nije u bazi, nema ni recenzija.
+        book = Book.objects.filter(external_id=external_id).first()
+        if not book:
+            return Response([])
+        reviews = Review.objects.filter(book=book).select_related('user', 'book').order_by('-created_at')
+        return Response(ReviewSerializer(reviews, many=True, context={'request': request}).data)
+
     book = get_or_create_book(external_id)
-    
+
     if Review.objects.filter(user=request.user, book=book).exists():
         return Response({"detail": "Već ste recenzirali ovu knjigu."}, status=status.HTTP_400_BAD_REQUEST)
         

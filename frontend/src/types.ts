@@ -7,6 +7,7 @@ export type UserSummary = {
 }
 
 export type Profile = {
+  id: number
   display_name: string
   avatar_url: string | null
 }

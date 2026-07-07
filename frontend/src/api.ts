@@ -109,7 +109,16 @@ export async function fetchBookDetail(externalId: string) {
     headers: { Authorization: `Bearer ${token}` },
   })
   await throwIfError(resp)
-  return await resp.json()
+  return await resp.json() as Book
+}
+
+export async function fetchBookReviews(externalId: string) {
+  const token = await getApiToken()
+  const resp = await fetch(`/api/books/${externalId}/reviews/`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+  return await resp.json() as Review[]
 }
 
 export async function addReview(externalId: string, reviewData: { rating: number; text: string }) {
@@ -132,7 +141,7 @@ export async function fetchShelves() {
     headers: { Authorization: `Bearer ${token}` },
   })
   await throwIfError(resp)
-  return await resp.json()
+  return await resp.json() as Shelf[]
 }
 
 export async function createShelf(shelfData: { name: string; is_public?: boolean }) {

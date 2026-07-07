@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { fetchShelves } from '@/api'
+import { fetchShelves, createShelf, formatError } from '@/api'
 import type { Shelf } from '@/types'
 import ShelfSection from './ShelfSection.vue'
 
@@ -27,12 +27,42 @@ const handleBookRemoved = (payload: { shelfId: number; externalId: string }) => 
   }
 }
 
+// kreiranje nove police
+const dialog = ref(false)
+const newName = ref('')
+const newPublic = ref(true)
+const creating = ref(false)
+const createError = ref('')
+
+const createNewShelf = async () => {
+  if (!newName.value.trim()) return
+  creating.value = true
+  createError.value = ''
+  try {
+    await createShelf({ name: newName.value.trim(), is_public: newPublic.value })
+    dialog.value = false
+    newName.value = ''
+    newPublic.value = true
+    await loadShelves()
+  } catch (error) {
+    createError.value = formatError(error)
+  } finally {
+    creating.value = false
+  }
+}
+
 onMounted(loadShelves)
 </script>
 
 <template>
   <v-container>
-    <h1 class="text-h4 mb-6 font-weight-bold">Moje police</h1>
+    <div class="d-flex align-center mb-6">
+      <h1 class="text-h4 font-weight-bold">Moje police</h1>
+      <v-spacer />
+      <v-btn color="primary" prepend-icon="mdi-plus" @click="dialog = true">
+        Nova polica
+      </v-btn>
+    </div>
     
     <div v-if="loading" class="d-flex justify-center my-10">
       <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
@@ -52,5 +82,36 @@ onMounted(loadShelves)
         <v-divider class="mt-4"></v-divider>
       </div>
     </template>
+
+    <v-dialog v-model="dialog" max-width="420">
+      <v-card title="Nova polica">
+        <v-card-text>
+          <v-text-field v-model="newName" label="Naziv police" autofocus />
+          <v-switch v-model="newPublic" label="Javna polica" color="primary" hide-details />
+
+          <v-alert
+            v-if="createError"
+            type="error"
+            variant="tonal"
+            class="mt-2"
+            style="white-space: pre-line"
+          >
+            {{ createError }}
+          </v-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="dialog = false">Odustani</v-btn>
+          <v-btn
+            color="primary"
+            :loading="creating"
+            :disabled="!newName.trim()"
+            @click="createNewShelf"
+          >
+            Spremi
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>

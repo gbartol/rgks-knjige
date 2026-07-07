@@ -46,6 +46,7 @@ const onBookSelect = (book: any) => {
           v-model:search="searchInput"
           :items="items"
           :loading="loading"
+          no-filter
           item-title="title"
           item-value="external_id"
           label="Unesi naslov knjige ili autora..."
@@ -59,9 +60,9 @@ const onBookSelect = (book: any) => {
           <template v-slot:item="{ props, item }">
             <v-list-item
               v-bind="props"
-              :prepend-avatar="item.raw.cover_url || 'https://placehold.co/40x60?text=No+Cover'"
-              :title="item.raw.title"
-              :subtitle="item.raw.authors"
+              :prepend-avatar="(item.raw ?? item)?.cover_url || 'https://placehold.co/40x60?text=No+Cover'"
+              :title="(item.raw ?? item)?.title"
+              :subtitle="(item.raw ?? item)?.authors"
             ></v-list-item>
           </template>
         </v-autocomplete>

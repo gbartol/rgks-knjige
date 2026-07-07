@@ -5,9 +5,11 @@ from .models import Profile, Book, Shelf, Review, Follow
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='user.id', read_only=True)
+
     class Meta:
         model = Profile
-        fields = ['display_name', 'avatar_url']
+        fields = ['id', 'display_name', 'avatar_url']
         read_only_fields = ['user']
 
 
