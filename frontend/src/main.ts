@@ -5,9 +5,7 @@ import { initAuth } from './auth/useAuth'
 import { registerPlugins } from '@/plugins'
 
 async function bootstrap() {
-  //await initAuth()
-  console.log("Nešto")
-  console.log(import.meta.VITE_TENANT_ID)
+  await initAuth()
   const app = createApp(App)
   registerPlugins(app)
   app.mount('#app')
