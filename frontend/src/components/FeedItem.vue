@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import type { Review } from '@/types'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 defineProps<{ review: Review }>()
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString('hr-HR')
+
+const onBookSelect = (book: any) => {
+  if (book) {
+    router.push({ name: 'book-details', params: { id: book.external_id } })
+  }
+}
 </script>
 
 <template>
@@ -34,7 +43,9 @@ const formatDate = (iso: string) => new Date(iso).toLocaleDateString('hr-HR')
           class="flex-grow-0 rounded"
         />
         <div>
-          <div class="font-weight-medium">{{ review.book.title }}</div>
+          <div class="font-weight-medium">
+            <v-btn @click="onBookSelect(review.book)">{{ review.book.title }}</v-btn>
+          </div>
           <div class="text-caption text-medium-emphasis mb-1">{{ review.book.authors }}</div>
           <v-rating :model-value="review.rating" density="compact" size="small" readonly />
           <p v-if="review.text" class="mt-2">{{ review.text }}</p>
