@@ -73,14 +73,16 @@ def get_or_create_book(external_id: str) -> Book:
         else:
             description = description_data
 
+        authors_list = doc.get("author_name", [])
+        authors = ", ".join(authors_list) if authors_list else "Nepoznat autor"
+
         covers = data.get("covers", [])
         cover_url = f"https://covers.openlibrary.org/b/id/{covers[0]}-L.jpg" if covers else None
 
-        # Kreiramo knjigu i spremimo ju u bazu
         book = Book.objects.create(
             external_id=external_id,
             title=title,
-            authors="Autor (Dohvaća se kroz pretragu)",  # Ovo ćemo elegantno povezati kroz serializer
+            authors=authors,
             description=description,
             cover_url=cover_url,
             published_year=None
