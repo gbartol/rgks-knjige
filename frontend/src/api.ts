@@ -112,6 +112,15 @@ export async function fetchBookDetail(externalId: string) {
   return await resp.json() as Book
 }
 
+export async function fetchBookDetailById(id: string) {
+  const token = await getApiToken()
+  const resp = await fetch(`/api/books/${id}/`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  await throwIfError(resp)
+  return await resp.json() as Book
+}
+
 export async function fetchBookReviews(externalId: string) {
   const token = await getApiToken()
   const resp = await fetch(`/api/books/${externalId}/reviews/`, {

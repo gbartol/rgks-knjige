@@ -26,7 +26,7 @@ AZURE_AD_CLIENT_ID = os.environ.get("VITE_CLIENT_ID", "")
 SECRET_KEY = "django-insecure-f$e55lhv6+fq_$0n4-s@bcf%q@ki(9tx5o^o3d+i#wg*57bd1#"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     host.strip()

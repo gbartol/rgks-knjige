@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fetchBookDetailById } from '@/api';
 import type { Review } from '@/types'
 import { useRouter } from 'vue-router'
 
@@ -8,11 +9,14 @@ defineProps<{ review: Review }>()
 
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString('hr-HR')
 
-const onBookSelect = (book: any) => {
+const onBookSelect = async (bookSummary: any) => {
+  const book = await fetchBookDetailById(bookSummary.id)
   if (book) {
     router.push({ name: 'book-details', params: { id: book.external_id } })
   }
 }
+
+
 </script>
 
 <template>

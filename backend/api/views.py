@@ -93,6 +93,15 @@ def book_search(request):
     return Response(results, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
+def book_detail_id(request, id):
+    try:
+        book = Book.objects.get(id=id)
+        serializer = BookSerializer(book)
+        return Response(serializer.data)
+    except ValueError as e:
+        return Response({"detail": str(e)}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
 def book_detail(request, external_id):
     try:
         book = get_or_create_book(external_id)
