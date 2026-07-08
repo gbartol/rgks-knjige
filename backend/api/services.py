@@ -82,7 +82,7 @@ def get_or_create_book(external_id: str) -> Book:
         book = Book.objects.create(
             external_id=external_id,
             title=title,
-            authors=authors,
+            authors="authors",
             description=description,
             cover_url=cover_url,
             published_year=None
