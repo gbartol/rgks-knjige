@@ -14,9 +14,8 @@
           <v-divider />
           <v-list-item title="Odjava" @click="logout()" />
         </v-list>
+        <v-btn v-else @click="login()">Prijava</v-btn>
       </v-navigation-drawer>
-      
-      <v-btn v-else @click="login()">Prijava</v-btn>
     </v-app-bar>
 
     <v-main>
