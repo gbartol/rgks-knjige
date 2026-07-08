@@ -82,9 +82,7 @@
 
   const { isAuthenticated, login, logout } = useAuth()
   const { mobile } = useDisplay()
-  onMounted(() => {
-    const mobitel = mobile.value
-  })
+  let mobitel = mobile.value
 
   const items = ['FEED','PRETRAGA KNJIGA','MOJE POLICE', 'KORISNICI','PROFIL','ODJAVA']
 
