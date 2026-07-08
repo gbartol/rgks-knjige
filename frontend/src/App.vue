@@ -5,14 +5,64 @@
       <v-spacer />
       
       <template v-if="isAuthenticated">
-        <v-menu>
+        <template v-if="mobitel">
+          <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                color="primary"
+                v-bind="props"
+              >
+                IZABERI OPCIJU
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                :key="index"
+                :value="index"
+                :to="{ name: 'feed' }"
+              >Feed
+              </v-list-item>
+              <v-list-item
+                :key="index"
+                :value="index"
+                :to="{ name: 'book-search' }"
+              >Pretraga knjiga
+              </v-list-item>
+              <v-list-item
+                :key="index"
+                :value="index"
+                :to="{ name: 'my-shelves' }"
+              >Moje police
+              </v-list-item>
+              <v-list-item
+                :key="index"
+                :value="index"
+                :to="{ name: 'users' }"
+              >Korisnici
+              </v-list-item>
+              <v-list-item
+                :key="index"
+                :value="index"
+                :to="{ name: 'profile' }"
+              >Profil
+              </v-list-item>
+              <v-list-item
+                :key="index"
+                :value="index"
+                @click="logout()"
+              >Odjava
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
+        <template v-else>
           <v-btn :to="{ name: 'feed' }">Feed</v-btn>
           <v-btn :to="{ name: 'book-search' }">Pretraga knjiga</v-btn>
           <v-btn :to="{ name: 'my-shelves' }">Moje police</v-btn>
           <v-btn :to="{ name: 'users' }">Korisnici</v-btn>
           <v-btn :to="{ name: 'profile' }">Profil</v-btn>
           <v-btn @click="logout()">Odjava</v-btn>
-        </v-menu>
+        </template>
       </template>
       
       <v-btn v-else @click="login()">Prijava</v-btn>
@@ -39,8 +89,16 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
   import { useAuth } from '@/auth/useAuth'
+  import { onMounted } from 'vue'
+  import { useDisplay } from 'vuetify'
 
   const { isAuthenticated, login, logout } = useAuth()
+  const { mobile } = useDisplay()
+  onMounted(() => {
+    const mobitel = mobile.value
+  })
+
+  const items = ['FEED','PRETRAGA KNJIGA','MOJE POLICE', 'KORISNICI','PROFIL','ODJAVA']
 
   const snackbar = ref(false)
   const snackbarText = ref('')
