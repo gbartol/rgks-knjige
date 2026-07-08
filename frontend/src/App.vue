@@ -17,38 +17,26 @@
             </template>
             <v-list>
               <v-list-item
-                :key="index"
-                :value="index"
                 :to="{ name: 'feed' }"
               >Feed
               </v-list-item>
               <v-list-item
-                :key="index"
-                :value="index"
                 :to="{ name: 'book-search' }"
               >Pretraga knjiga
               </v-list-item>
               <v-list-item
-                :key="index"
-                :value="index"
                 :to="{ name: 'my-shelves' }"
               >Moje police
               </v-list-item>
               <v-list-item
-                :key="index"
-                :value="index"
                 :to="{ name: 'users' }"
               >Korisnici
               </v-list-item>
               <v-list-item
-                :key="index"
-                :value="index"
                 :to="{ name: 'profile' }"
               >Profil
               </v-list-item>
               <v-list-item
-                :key="index"
-                :value="index"
                 @click="logout()"
               >Odjava
               </v-list-item>
