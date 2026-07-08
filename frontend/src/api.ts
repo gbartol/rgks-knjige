@@ -114,7 +114,7 @@ export async function fetchBookDetail(externalId: string) {
 
 export async function fetchBookDetailById(id: string) {
   const token = await getApiToken()
-  const resp = await fetch(`/api/books/${id}/`, {
+  const resp = await fetch(`/api/books_id/${id}/`, {
     headers: { Authorization: `Bearer ${token}` },
   })
   await throwIfError(resp)
